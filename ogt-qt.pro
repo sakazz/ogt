@@ -4,9 +4,10 @@ macx:TARGET = "ogt-Qt"
 VERSION = 1.0.0
 INCLUDEPATH += src src/json src/qt
 QT += network
-DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE
+DEFINES += QT_GUI BOOST_THREAD_USE_LIB BOOST_SPIRIT_THREADSAFE BOOST_THREAD_PROVIDES_GENERIC_SHARED_MUTEX_ON_WIN __NO_SYSTEM_INCLUDES
 CONFIG += no_include_pwd
 CONFIG += thread
+CONFIG += static
 
 # for boost 1.37, add -mt to the boost libraries
 # use: qmake BOOST_LIB_SUFFIX=-mt
@@ -17,6 +18,17 @@ CONFIG += thread
 # Dependency library locations can be customized with:
 #    BOOST_INCLUDE_PATH, BOOST_LIB_PATH, BDB_INCLUDE_PATH,
 #    BDB_LIB_PATH, OPENSSL_INCLUDE_PATH and OPENSSL_LIB_PATH respectively
+BOOST_LIB_SUFFIX=-mgw48-mt-sd-1_50
+BOOST_INCLUDE_PATH=D:/boost-1.50.0-mgw/boost
+BOOST_LIB_PATH=D:/boost-1.50.0-mgw/stage/lib
+BDB_INCLUDE_PATH=D:/db-4.8.30.NC-mgw/include
+BDB_LIB_PATH=D:/db-4.8.30.NC-mgw/lib
+OPENSSL_INCLUDE_PATH=D:/openssl-1.0.1g-mgw/include/openssl
+OPENSSL_LIB_PATH=D:/MinGW/msys/1.0/local/ssl/lib
+MINIUPNPC_INCLUDE_PATH=D:/miniupnpc-1.6-mgw/miniupnpc
+MINIUPNPC_LIB_PATH=D:/MinGW/msys/1.0/local/lib
+QRENCODE_INCLUDE_PATH=D:/MinGW/msys/1.0/local/qrencode-3.4.4-mgw
+QRENCODE_LIB_PATH=D:/MinGW/msys/1.0/local/qrencode-3.4.4-mgw/.libs
    USE_QRCODE=1
 USE_QRENCODE=1
 OBJECTS_DIR = build
@@ -38,8 +50,8 @@ contains(RELEASE, 1) {
 
 !win32 {
     # for extra security against potential buffer overflows: enable GCCs Stack Smashing Protection
-    QMAKE_CXXFLAGS *= -fstack-protector-all
-    QMAKE_LFLAGS *= -fstack-protector-all
+QMAKE_CXXFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
+QMAKE_LFLAGS *= -fstack-protector-all --param ssp-buffer-size=1
     # Exclude on Windows cross compile with MinGW 4.2.x, as it will result in a non-working executable!
     # This can be enabled for Windows, when we switch to MinGW >= 4.4.x.
 }
@@ -58,7 +70,7 @@ contains(USE_QRCODE, 1) {
     message(Building with QRCode support)
     DEFINES += USE_QRCODE
     LIBS += -lqrencode 
-    LIBS += -lpthread
+   # LIBS += -lpthread
 }
 
 # use: qmake "USE_UPNP=1" ( enabled by default; default)
